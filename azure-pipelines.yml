@@ -1,0 +1,30 @@
+trigger:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+variables:
+  TF_VERSION: '1.10.5'
+
+steps:
+
+- task: TerraformInstaller@0
+  inputs:
+    terraformVersion: $(TF_VERSION)
+
+- job: terraformTests
+  displayName: "Run Terraform tests in multiple folders"
+  strategy:
+    matrix:
+      folder1:
+        path: "keyvault/tests"
+      folder2:
+        path: "storage/tests"
+      folder3:
+        path: "virutalmachines/tests"
+  steps:
+    - task: TerraformTask@0
+      inputs:
+        command: "test"
+        workingDirectory: "$(Build.SourcesDirectory)/$(path)"
